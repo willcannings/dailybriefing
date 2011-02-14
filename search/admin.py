@@ -19,9 +19,9 @@ def admin_sublinks():
 # admin
 # ---------------------------------------------------------
 @user_passes_test(lambda u: u.is_superuser)
-def index(request):
+def home(request):
   context = RequestContext(request)
-  return render_to_response('admin/index.html', {
+  return render_to_response('admin/home.html', {
     'title': 'Admin',
     'breadcrumbs': [['/admin', 'admin']],
     'sublinks': admin_sublinks()

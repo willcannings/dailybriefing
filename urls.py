@@ -14,6 +14,10 @@ urlpatterns = patterns('',
   # settings
   url(r'^settings/?', 'search.users.settings'),
   
+  # django admin
+  (r'^django_admin/doc/', include('django.contrib.admindocs.urls')),
+  (r'^django_admin/?', include(admin.site.urls)),
+  
   # front end admin
   url(r'^admin/users/?', 'search.admin.users'),
   url(r'^admin/user/(?P<id>\d+)/?', 'search.admin.user'),
@@ -26,11 +30,7 @@ urlpatterns = patterns('',
   url(r'^admin/pages/search/?', 'search.admin.search_pages'),
   url(r'^admin/pages/?', 'search.admin.pages'),
   url(r'^admin/page/(?P<id>\d+)/?', 'search.admin.page'),
-  url(r'^admin/?$', 'search.admin.index'),
-  
-  # django admin
-  (r'^django_admin/doc/', include('django.contrib.admindocs.urls')),
-  (r'^django_admin/', include(admin.site.urls)),
+  url(r'^admin/?$', 'search.admin.home'),
   
   # home
   (r'^$', 'search.home.index'),
