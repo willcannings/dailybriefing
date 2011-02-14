@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>{% if title %}Daily Briefing - {{ title }}{% else %}Daily Briefing{% endif %}</title>
+    <link rel="stylesheet" href="/static/css/reset.css" type="text/css">
+    <link rel="stylesheet" href="/static/css/screen.css" type="text/css">
+  </head>
+  <body>
+    <header>
+      <h1><a href="/">Daily Briefing</a></h1>
+      <nav>
+        <ul>
+          <li><a href="/">home</a></li>
+          {% if user.is_authenticated %}
+            <li><a href="/briefing">briefing</a></li>
+            <li><a href="/settings">settings</a></li>
+            {% if user.is_staff %}
+              <li><a href="/admin/">admin</a></li>
+            {% endif %}
+            <li><a href="{% url logout %}">logout</a></li>
+          {% else %}
+            <li><a href="/signup">sign up</a></li>
+          {% endif %}
+        </ul>
+      </nav>
+    </header>
+
+    <nav id="breadcrumbs">
+      <ul>
+        {% if breadcrumbs %}
+          {% for page in breadcrumbs %}
+            <li><a href="{{ page|first }}">{{ page|last }}</a></li>
+          {% endfor %}
+        {% else %}
+          <li><a href="#">{{title}}</a></li>
+        {% endif %}
+      </ul>
+      
+      {% if sublinks %}
+        <ul id="sublinks">
+          {% for page in sublinks %}
+            <li><a href="{{ page|first }}">{{ page|last }}</a></li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+    </nav>
+    
+    <article>
+      {% block sub_header %}{% endblock %}
+      {% block content %}{% endblock %}
+    </article>
+    
+    <script src="/static/js/jquery.js"></script>
+    <script src="/static/js/application.js"></script>
+  </body>
+</html>

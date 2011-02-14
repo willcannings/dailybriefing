@@ -1,0 +1,38 @@
+{% extends "admin/admin.html" %}
+
+{% block content %}
+<h1>Users</h1>
+
+<ul class="admin">
+  {% for user in users.object_list %}
+    <li>
+      <a href="/admin/user/{{ user.id }}">{{ user.email }}{% if user.is_superuser %} (admin){% endif %}</a>
+      <menu>
+        <li><a href="/admin/user/{{ user.id }}">view</a></li>
+        <li><a href="/admin/delete_user/{{ user.id }}?page={{users.number}}" data-delete="true" data-type="user">delete</a></li>
+      </menu>
+    </li>
+  {% endfor %}
+</ul>
+
+<nav class="pagination">
+  <ul>
+    <li class="left_cap">
+      {% if users.has_previous %}<a href="?page={{ users.previous_page_number }}">{% endif %}
+        &laquo; previous
+      {% if users.has_previous %}</a>{% endif %}
+    </li>
+    
+    {% for page_number in users.paginator.page_range %}
+      <li><a href="?page={{ page_number }}" {% if users.number == page_number %}class="selected"{% endif %}>{{ page_number }}</a>
+    {% endfor %}
+
+    <li class="right_cap">
+      {% if users.has_next %}<a href="?page={{ users.next_page_number }}">{% endif %}
+        next &raquo;
+      {% if users.has_next %}</a>{% endif %}
+    </li>
+  </ul>
+  <div style="clear: both"></div>
+</nav>
+{% endblock %}

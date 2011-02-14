@@ -1,0 +1,42 @@
+{% extends "admin/admin.html" %}
+
+{% block content %}
+<h1>Pages</h1>
+
+<ul class="admin">
+  {% for page in pages.object_list %}
+    <li>
+      <a href="/admin/page/{{ page.id }}">{{ page.url }}</a>
+      <menu>
+        <li><a href="/admin/page/{{ page.id }}">view</a></li>
+        <li><a href="/admin/delete_page/{{ page.id }}?page={{ page.number }}" data-delete="true" data-type="page">delete</a></li>
+      </menu>
+    </li>
+  {% endfor %}
+  
+  {% if not pages.object_list %}
+    <li>No pages</li>
+  {% endif %}
+</ul>
+
+<nav class="pagination">
+  <ul>
+    <li class="left_cap">
+      {% if pages.has_previous %}<a href="?page={{ pages.previous_page_number }}">{% endif %}
+        &laquo; previous
+      {% if pages.has_previous %}</a>{% endif %}
+    </li>
+    
+    {% for page_number in pages.paginator.page_range %}
+      <li><a href="?page={{ page_number }}" {% if pages.number == page_number %}class="selected"{% endif %}>{{ page_number }}</a>
+    {% endfor %}
+
+    <li class="right_cap">
+      {% if pages.has_next %}<a href="?page={{ pages.next_page_number }}">{% endif %}
+        next &raquo;
+      {% if pages.has_next %}</a>{% endif %}
+    </li>
+  </ul>
+  <div style="clear: both"></div>
+</nav>
+{% endblock %}

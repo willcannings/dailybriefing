@@ -1,0 +1,20 @@
+{% extends "admin/admin.html" %}
+
+{% block content %}
+<h1>User: {{user.email}}</h1>
+
+{% if message %}
+<p class="message">{{ message }}</p>
+{% endif %}
+
+<form action="/admin/user/{{ user.id }}" method="post" class="admin">
+  {% csrf_token %}
+  <div class="form_container">
+    <h2>Change Password:</h2>
+    {{ form.as_p }}
+  </div>
+  <a href="/admin/users">Cancel</a>
+  <input type="submit" value="Save">
+</form>
+
+{% endblock %}

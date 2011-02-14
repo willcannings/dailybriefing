@@ -1,0 +1,121 @@
+{% extends "admin/admin.html" %}
+
+{% block content %}
+{% if source %}
+<h1>Source: {{source.name}}</h1>
+{% else %}
+<h1>New Source</h1>
+{% endif %}
+
+{% if message %}
+<p class="message">{{ message }}</p>
+{% endif %}
+
+{% if source %}
+<form action="/admin/source/{{ source.id }}" method="post" class="admin source">
+{% else %}
+<form action="/admin/sources/new" method="post" class="admin source">
+{% endif %}
+  {% csrf_token %}
+  
+  <div class="form_container">
+    {{ form.non_field_errors }}
+    
+    <h3 id="top">Name</h3>
+    {{ form.name.errors }}
+    <p>{{ form.name }}</p>
+    
+    <h3>URL Wildcard</h3>
+    {{ form.url_wildcard.errors }}
+    <p>{{ form.url_wildcard }}</p>
+    
+    <h3>Max pages per hour to process</h3>
+    {{ form.max_pages.errors }}
+    <p>{{ form.max_pages }}</p>
+    
+    <h3>Scaling Factors</h3>
+    <div id="scaling_factors">
+      <div class="scaling_factor">
+        <label for="l1">L1</label>
+        {{ form.l1 }}
+        {{ form.l1.errors }}
+      </div>
+      
+      <div class="scaling_factor">
+        <label for="l2">L2</label>
+        {{ form.l2 }}
+        {{ form.l2.errors }}
+      </div>
+      
+      <div class="scaling_factor">
+        <label for="t1">T1</label>
+        {{ form.t1 }}
+        {{ form.t1.errors }}
+      </div>
+      
+      <div class="scaling_factor">
+        <label for="t2">T2</label>
+        {{ form.t2 }}
+        {{ form.t2.errors }}
+      </div>
+      
+      <div class="scaling_factor">
+        <label for="a1">A1</label>
+        {{ form.a1 }}
+        {{ form.a1.errors }}
+      </div>
+      
+      <div class="scaling_factor">
+        <label for="a2">A2</label>
+        {{ form.a2 }}
+        {{ form.a2.errors }}
+      </div>
+    </div>
+    
+    {% if source %}
+      <h3>Index Pages</h3>
+      <div id="index_pages">
+        {{ formset.management_form }}
+        {% for form in formset %}
+          {{ form.id }}
+          {{ form.url.errors }}
+          <p>
+            <label>Url:</label>
+            {{ form.url }}
+            {{ form.DELETE }} Delete
+            {% for key, value in form.fields.items %}
+              {% if key == 'id' %}
+                <a href="/admin/page/{{ value.initial }}" class="show_stats">Show Stats</a>
+              {% endif %}
+            {% endfor %}
+          </p>
+        {% endfor %}
+      </div>
+    
+      {% if index_count < 10 %}
+        <a href="/admin/new_source_index/{{ source.id }}" id="add_index">Add Index Page</a>
+      {% endif %}
+    {% endif %}
+  </div>
+  
+  {% if source %}
+    <div class="form_container stats">
+      <h2>Stats</h2>    
+      <h3>Pages Indexed</h3>
+      <p><label>Last hour:</label>{{ source.last_hour }}</p>
+      <p><label>Last 24 hours:</label>{{ source.last_24_hours }}</p>
+      <p><label>Total:</label>{{ source.total_indexed }}</p>
+    
+      <h3>Queues</h3>
+      <p><label>Immediate:</label>{{ source.queue_immediate }}</p>
+      <p><label>Delayed total:</label>{{ source.delayed_total }}</p>
+      <p><label>Delayed ready:</label>{{ source.delayed_ready }}</p>
+    </div>
+  {% endif %}
+  
+  <div style="clear: both"></div>
+  <a href="/admin/sources">Cancel</a>
+  <input type="submit" value="Save">
+</form>
+
+{% endblock %}

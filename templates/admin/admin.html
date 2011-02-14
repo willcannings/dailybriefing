@@ -1,0 +1,7 @@
+{% extends "layout.html" %}
+
+{% block sub_header %}
+<form action="/admin/pages/search" method="get" id="page_search">
+  <input type="search" placeholder="Enter a URL to see page stats" name="url">
+</form>
+{% endblock %}

@@ -1,0 +1,33 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<h1>Daily Briefing</h1>
+
+{% if not user.is_authenticated %}
+  <form class="user_panel" action="/login" method="post">
+    {% csrf_token %}
+    <input type="hidden" name="next" value="{{ next }}">
+    <h1>Login</h1>
+    <p class='error'>{{error}}</p>
+    <p>
+      <label for="username">Email</label>
+      <input type="text" name="username">
+    </p>
+    <p>
+      <label for="password">Password</label>
+      <input type="password" name="password">
+    </p>
+    <div id="signin_row">
+      <input type="submit" value="Sign in" id="signin">
+      <input type="checkbox" name="remember_me" value="1">
+      <label for="remember_me">Remember Me</label>
+      <a href="/signup">Signup for free</a>
+    </div>
+  </form>
+{% endif %}
+
+<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin sit amet lacus a erat elementum sagittis vitae ac lectus. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Nulla sed velit quam, vitae mattis metus. Donec eleifend sagittis velit eget varius. Donec ante purus, auctor ut tempor non, suscipit rutrum lectus. Etiam semper placerat ligula. Sed blandit posuere lectus, at hendrerit dolor imperdiet quis. Suspendisse urna nisl, laoreet vitae eleifend at, posuere at turpis. Aenean quis pulvinar mauris. Praesent sit amet diam lectus. Proin venenatis malesuada egestas. Ut ultrices tincidunt elit sit amet mollis. Sed tellus erat, viverra sit amet aliquet eget, accumsan eu lacus. Praesent porttitor, elit at tincidunt sagittis, orci purus viverra nibh, eu condimentum mi mauris quis nisi. Praesent quis massa justo, nec pretium orci. Donec volutpat, est ut dictum condimentum, elit nibh dictum sapien, sed vehicula sapien nisi fringilla metus.</p>
+
+<p>Curabitur dui est, consectetur ac consequat sit amet, vulputate in velit. Nulla lobortis diam et eros molestie ultrices nec id magna. Ut quis risus lacus. Ut feugiat sem sit amet lorem porttitor luctus. Nam id ante purus, in pellentesque magna. Curabitur venenatis dictum dolor et imperdiet. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Donec tortor nisi, mollis et rutrum in, ultrices at leo. Proin consequat tempor fringilla. Aliquam erat volutpat. Integer pretium, metus sit amet hendrerit elementum, tortor urna sollicitudin est, consequat iaculis tortor nulla nec elit. Sed vitae risus ante, non pharetra nunc. Nullam mauris ante, facilisis sed congue quis, porta sed dolor. Suspendisse et massa magna, quis condimentum erat. Donec luctus fermentum velit quis commodo. Aliquam placerat purus sit amet nibh fermentum dictum. Vestibulum non fringilla quam. Proin sollicitudin magna non purus pretium pretium.</p>
+<img src="/static/images/howitworks.png">
+{% endblock %}

@@ -1,0 +1,18 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<h1>Settings</h1>
+
+{% if message %}
+<p class="message">{{ message }}</p>
+{% endif %}
+
+<form action="/settings" method="post" class="admin">
+  {% csrf_token %}
+  <div class="form_container">
+    {{ form.as_p }}
+  </div>
+  <input type="submit" value="Save">
+</form>
+
+{% endblock %}
