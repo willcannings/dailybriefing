@@ -9,10 +9,10 @@ MANAGERS = ADMINS
 DATABASES = {
   'default': {
     'ENGINE': 'django.db.backends.postgresql_psycopg2',
-    'NAME': 'news_development',
+    'NAME': 'news',
     'USER': 'postgres',
     'PASSWORD': 'postgres',
-    'HOST': '',
+    'HOST': 'localhost',
     'PORT': '',
   }
 }
