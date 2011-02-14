@@ -14,7 +14,7 @@
           {% if user.is_authenticated %}
             <li><a href="/briefing">briefing</a></li>
             <li><a href="/settings">settings</a></li>
-            {% if user.is_staff %}
+            {% if user.is_superuser %}
               <li><a href="/admin/">admin</a></li>
             {% endif %}
             <li><a href="{% url logout %}">logout</a></li>
