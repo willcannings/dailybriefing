@@ -151,7 +151,7 @@ def sources(request):
 @user_passes_test(lambda u: u.is_superuser)
 def source(request, id):
   # pages inline formset
-  PageFormSet = forms.models.inlineformset_factory(NewsSource, Page, extra=0, max_num=10, fields=('url',))
+  PageFormSet = forms.models.inlineformset_factory(NewsSource, Page, extra=0, fields=('url',))
   source = get_object_or_404(NewsSource, id=id)
   message = ''
 
