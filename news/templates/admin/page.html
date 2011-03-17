@@ -7,20 +7,20 @@
   <div id="links">
     <h2>Inbound Links</h2>
     <ul class="page_links">
-      {% for link in page.inbound_set.objects %}
-        <li><a href="/admin/stats/{{ link.id }}">{{ link.url }}</a><a href="/admin/pages/{{ link.id }}" class="stats">stats</a></li>
+      {% for link in page.inbound_set.all %}
+        <li>{{ link.page.url }}<a href="/admin/page/{{ link.page.id }}" class="stats">stats</a></li>
       {% endfor %}
-      {% if not page.inbound_set.objects %}
+      {% if page.inbound_set.count == 0 %}
         <li>No inbound links</li>
       {% endif %}
     </ul>
   
     <h2>Outbound Links</h2>
     <ul class="page_links">
-      {% for link in page.outbound_set.objects %}
-        <li><a href="/admin/stats/{{ link.id }}">{{ link.url }}</a><a href="/admin/pages/{{ link.id }}" class="stats">stats</a></li>
+      {% for link in page.outbound_set.all %}
+        <li>{{ link.outbound.url }}<a href="/admin/page/{{ link.outbound.id }}" class="stats">stats</a></li>
       {% endfor %}
-      {% if not page.outbound_set.objects %}
+      {% if page.outbound_set.count == 0 %}
         <li>No outbound links</li>
       {% endif %}
     </ul>
@@ -33,14 +33,13 @@
   <p><label>Last Analysed:</label>{{ page.last_analysed }}</p>
   <p><label>Next Analysis:</label>{{ page.next_analysis }}</p>
   <p><label>Times Analysed:</label>{{ page.analysis_count }}</p>
-  <p><label>Times Changes:</label>{{ page.times_changed }}</p>
-  <p><label>Time on Index:</label>{{ page.time_on_index }}</p>
+  <p><label>Times Changed:</label>{{ page.times_changed }}</p>
+  <p><label>Time on Index:</label>{{ page.time_on_index }} minutes</p>
   <p><label>Inbound Links:</label>{{ page.inbound_set.count }}</p>
   <p><label>Outbound Links:</label>{{ page.outbound_set.count }}</p>
-  <p><label>Indexed HTML:</label><a href="#">Click to show</a></p>
   
   <h2 id="last_indexed_text">Last Indexed Text</h2>
-  <textarea>{{ page.html }}</textarea>  
+  <textarea>{{ page.text }}</textarea>  
 </div>
 
 {% endblock %}

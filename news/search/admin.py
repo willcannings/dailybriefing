@@ -7,6 +7,7 @@ from django.contrib.auth.models import User
 from django import forms
 from search.models import *
 
+IMMEDIATE_QUEUE_ANALYSIS_DATE = datetime.datetime(3000,1,1,0,0,0)
 
 def admin_path(name, url):
   return [['/admin', 'admin'], [url, name]]
@@ -213,6 +214,7 @@ def new_source_index(request, id):
   new_index.index_page = True
   new_index.news_source = source
   new_index.url = source.url_wildcard
+  new_index.next_analysis = IMMEDIATE_QUEUE_ANALYSIS_DATE
   new_index.save()
   return redirect('/admin/source/' + str(source.id))
 

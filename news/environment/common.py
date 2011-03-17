@@ -54,7 +54,7 @@ MEDIA_URL = '/static/uploads/'
 
 # Absolute path to the directory that holds static files.
 # Example: "/home/media/media.lawrence.com/static/"
-STATIC_ROOT = os.path.join(PROJECT_ROOT, '..', 'static')
+#STATIC_ROOT = os.path.join(PROJECT_ROOT, '..', 'static')
 
 # URL that handles the static files served from STATIC_ROOT.
 # Example: "http://media.lawrence.com/static/"
@@ -66,7 +66,7 @@ STATIC_URL = '/static/'
 ADMIN_MEDIA_PREFIX = '/static/admin/'
 
 # A list of locations of additional static files
-STATICFILES_DIRS = ()
+STATICFILES_DIRS = (os.path.join(PROJECT_ROOT, '..', 'static'),)
 
 # List of finder classes that know how to find static files in
 # various locations.
