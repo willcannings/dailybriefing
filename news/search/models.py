@@ -12,6 +12,7 @@ INDEX_ANALYSIS_DELTA    = 15
 INITIAL_ANALYSIS_DELTA  = 60
 TEXT_MODIFIED_SCALING   = 0.7
 TEXT_UNMODIFIED_SCALING = 1.5
+IMMEDIATE_QUEUE_ANALYSIS_DATE = datetime.datetime(3000,1,1,0,0,0)
 
 
 # usernames are email addresses; the default max length of 30 is too short
