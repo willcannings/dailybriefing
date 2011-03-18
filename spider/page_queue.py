@@ -35,11 +35,11 @@ class PageQueue:
     for page in pages:
       if page.url not in self.pages:
         added += 1
-        self.queue.put((page.next_analysis, page))
-        self.pages[page.url] = page
+        self.queue.put((page.next_analysis, page.id))
+        self.pages[page.url] = page.id
     
     # for logging purposes print the number of successfully processed pages
-    self.logger.info("Added " + str(added) + " unknown ready or immediate pages from the database")
+    self.logger.debug("Added " + str(added) + " unknown ready or immediate pages from the database")
     self.logger.info("Indexed " + str(self.processed_pages) + " pages")
     self.processed_pages = 0
     self.mutex.release()
@@ -61,16 +61,25 @@ class PageQueue:
         seen[url] = 1
       linked_page = None
       
+      # inspect our internal queue for the url
+      self.mutex.acquire()
       if url in self.pages:
-        linked_page = self.pages[url]
-      else:
+        try:
+          linked_page = Page.objects.get(id = self.pages[url])
+        except Page.DoesNotExist:
+          self.logger.warn("Queue pages hash contained reference to page of id " + str(self.pages[url]) + " which no longer exists")
+          del self.pages[url]
+      self.mutex.release()
+      
+      # otherwise attempt to find the page by url, or create it
+      if linked_page is None:
         try:
           linked_page = Page.objects.get(url=url)
         except Page.DoesNotExist:
           linked_page = self.create_page(url)
       
       # only continue if the url matches an existing page, or matches a news url source wildcard
-      if linked_page == None:
+      if linked_page is None:
         continue
       
       # create a link between the two pages if necessary
@@ -97,7 +106,7 @@ class PageQueue:
       return None
     
     # create a new page
-    self.logger.debug("Adding new page: " + url)
+    self.logger.debug("Adding new page <" + url + ">")
     page = Page()
     page.next_analysis = IMMEDIATE_QUEUE_ANALYSIS_DATE
     page.news_source = news_source
@@ -110,8 +119,8 @@ class PageQueue:
     # add to the queue immediately if appropriate
     self.mutex.acquire()
     if url not in self.pages:
-      self.queue.put((page.next_analysis, page))
-      self.pages[page.url] = page
+      self.queue.put((page.next_analysis, page.id))
+      self.pages[page.url] = page.id
     self.mutex.release()
     return page
 
@@ -122,7 +131,22 @@ class PageQueue:
     # FIXME: ensure max pages per hour per news source is honoured
     try:
       item = self.queue.get(True, TIMEOUT_SECONDS)
-      return item[1]
+      
+      # ensure a page with this id exists
+      try:
+        page = Page.objects.get(id = item[1])
+      except Page.DoesNotExist:
+        self.logger.warn("Queue contained reference to page of id " + str(item[1]) + " which no longer exists")
+        
+        # delete the page id from the pages hash
+        self.mutex.acquire()
+        for pair in self.pages.items():
+          if pair[1] == item[1]:
+            del self.pages[pair[0]]
+        self.mutex.release()
+        page = None  
+      return page
+      
     except Queue.Empty:
       return None
 

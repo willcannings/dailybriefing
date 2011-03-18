@@ -33,6 +33,7 @@ class Worker(Thread):
         except urllib2.URLError:
           self.logger.info("Error retrieving <" + page.url + ">")
           page.error()
+          self.queue.remove_page(page)
           continue
       
         # convert the page to utf8 and parse
@@ -77,5 +78,6 @@ class Worker(Thread):
       except:
         self.logger.info("Unexpected exception on <" + page.url + ">: " + str(sys.exc_info()[1]))
         page.error()
+        self.queue.remove_page(page)
         
     self.logger.info("Worker complete")
