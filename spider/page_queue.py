@@ -36,7 +36,7 @@ class PageQueue:
         self.queue.put((page.next_analysis, page))
         self.pages[page.url] = page
     self.mutex.release()
-    self.logger.debug("Added " + str(added) + " new pages")
+    self.logger.info("Added " + str(added) + " new pages from the database")
     
     self.logger.debug("Updating news source ready counts")
     for source in NewsSource.objects.all():

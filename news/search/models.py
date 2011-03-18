@@ -103,7 +103,7 @@ class Page(models.Model):
         self.news_source.save()
       self.delete()
     else:
-      self.next_analysis = datetime.datetime.now() + datetime.timedelta(minutes=5*(2 ** (page.failure_count - 1)))
+      self.next_analysis = datetime.datetime.now() + datetime.timedelta(minutes=5*(2 ** (self.failure_count - 1)))
       self.news_source.save()
       self.save()
   
@@ -137,7 +137,7 @@ class Page(models.Model):
     
     # pages become stale after 5 days
     five_days_ago = datetime.datetime.now() - datetime.timedelta(days=5)
-    if self.first_analysed <= five_days_ago:
+    if self.first_analysed <= five_days_ago and not self.index_page:
       self.news_source.delayed_total -= 1
       self.next_analysis = None
     else:

@@ -26,7 +26,7 @@ file_handler.setFormatter(formatter)
 stderr_handler.setFormatter(formatter)
 logger.addHandler(file_handler)
 logger.addHandler(stderr_handler)
-logger.setLevel(logging.DEBUG)
+logger.setLevel(logging.INFO)
 
 
 # ---------------------------------------------------------
