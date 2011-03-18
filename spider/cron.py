@@ -29,8 +29,4 @@ for news_source in NewsSource.objects.all():
   if day_boundary:
     news_source.total_indexed += news_source.last_24_hours
     news_source.last_24_hours = 0
-  
-  news_source.queue_immediate = news_source.page_set.filter(next_analysis=IMMEDIATE_QUEUE_ANALYSIS_DATE).count()
-  news_source.delayed_total = news_source.page_set.filter(next_analysis__isnull=False).count() - news_source.queue_immediate
-  news_source.delayed_ready = news_source.page_set.filter(next_analysis__lte=datetime.datetime.now()).count()
-  news_source.save()
+  news_source.update_all_counts()

@@ -8,32 +8,26 @@ class Migration(SchemaMigration):
 
     def forwards(self, orm):
         
-        # Adding field 'Page.analysis_delta'
-        db.add_column('search_page', 'analysis_delta', self.gf('django.db.models.fields.IntegerField')(default=60), keep_default=False)
+        # Changing field 'Page.title'
+        db.alter_column('search_page', 'title', self.gf('django.db.models.fields.CharField')(max_length=1024))
 
-        # Changing field 'Page.next_analysis'
-        db.alter_column('search_page', 'next_analysis', self.gf('django.db.models.fields.DateTimeField')(auto_now_add=True, null=True, default=datetime.datetime(2011, 3, 16, 10, 51, 37, 561984)))
+        # Changing field 'Page.url'
+        db.alter_column('search_page', 'url', self.gf('django.db.models.fields.CharField')(max_length=1024))
 
-        # Changing field 'Page.first_analysed'
-        db.alter_column('search_page', 'first_analysed', self.gf('django.db.models.fields.DateTimeField')(null=True))
-
-        # Changing field 'Page.last_analysed'
-        db.alter_column('search_page', 'last_analysed', self.gf('django.db.models.fields.DateTimeField')(null=True))
+        # Changing field 'NewsSource.url_wildcard'
+        db.alter_column('search_newssource', 'url_wildcard', self.gf('django.db.models.fields.CharField')(max_length=1024))
 
 
     def backwards(self, orm):
         
-        # Deleting field 'Page.analysis_delta'
-        db.delete_column('search_page', 'analysis_delta')
+        # Changing field 'Page.title'
+        db.alter_column('search_page', 'title', self.gf('django.db.models.fields.CharField')(max_length=255))
 
-        # Changing field 'Page.next_analysis'
-        db.alter_column('search_page', 'next_analysis', self.gf('django.db.models.fields.DateTimeField')(null=True))
+        # Changing field 'Page.url'
+        db.alter_column('search_page', 'url', self.gf('django.db.models.fields.CharField')(max_length=255))
 
-        # User chose to not deal with backwards NULL issues for 'Page.first_analysed'
-        raise RuntimeError("Cannot reverse this migration. 'Page.first_analysed' and its values cannot be restored.")
-
-        # User chose to not deal with backwards NULL issues for 'Page.last_analysed'
-        raise RuntimeError("Cannot reverse this migration. 'Page.last_analysed' and its values cannot be restored.")
+        # Changing field 'NewsSource.url_wildcard'
+        db.alter_column('search_newssource', 'url_wildcard', self.gf('django.db.models.fields.CharField')(max_length=255))
 
 
     models = {
@@ -96,24 +90,24 @@ class Migration(SchemaMigration):
             't1': ('django.db.models.fields.DecimalField', [], {'max_digits': '7', 'decimal_places': '2'}),
             't2': ('django.db.models.fields.DecimalField', [], {'max_digits': '7', 'decimal_places': '2'}),
             'total_indexed': ('django.db.models.fields.IntegerField', [], {'default': '0'}),
-            'url_wildcard': ('django.db.models.fields.CharField', [], {'max_length': '255'})
+            'url_wildcard': ('django.db.models.fields.CharField', [], {'max_length': '1024'})
         },
         'search.page': {
             'Meta': {'object_name': 'Page'},
             'analysis_count': ('django.db.models.fields.IntegerField', [], {'default': '0'}),
             'analysis_delta': ('django.db.models.fields.IntegerField', [], {'default': '60'}),
+            'failure_count': ('django.db.models.fields.IntegerField', [], {'default': '0'}),
             'first_analysed': ('django.db.models.fields.DateTimeField', [], {'null': 'True', 'blank': 'True'}),
-            'html': ('django.db.models.fields.TextField', [], {'blank': 'True'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'index_page': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'last_analysed': ('django.db.models.fields.DateTimeField', [], {'null': 'True', 'blank': 'True'}),
             'news_source': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['search.NewsSource']"}),
-            'next_analysis': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
+            'next_analysis': ('django.db.models.fields.DateTimeField', [], {}),
             'text': ('django.db.models.fields.TextField', [], {'blank': 'True'}),
             'time_on_index': ('django.db.models.fields.IntegerField', [], {'default': '0'}),
             'times_changed': ('django.db.models.fields.IntegerField', [], {'default': '0'}),
-            'title': ('django.db.models.fields.CharField', [], {'default': "''", 'max_length': '255', 'blank': 'True'}),
-            'url': ('django.db.models.fields.CharField', [], {'max_length': '255'})
+            'title': ('django.db.models.fields.CharField', [], {'default': "''", 'max_length': '1024', 'blank': 'True'}),
+            'url': ('django.db.models.fields.CharField', [], {'max_length': '1024'})
         },
         'search.searchcategory': {
             'Meta': {'object_name': 'SearchCategory'},

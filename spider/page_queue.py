@@ -37,13 +37,18 @@ class PageQueue:
         self.pages[page.url] = page
     self.mutex.release()
     self.logger.debug("Added " + str(added) + " new pages")
+    
+    self.logger.debug("Updating news source ready counts")
+    for source in NewsSource.objects.all():
+      source.update_ready_count()
   
   
   def add_pages(self, links, page):
     seen = {}
     
     for link in links:
-      url = urlparse.urldefrag(urlparse.urljoin(page.url, link.attrib['href']))[0]
+      components = urlparse.urlsplit(urlparse.urljoin(page.url, link.attrib['href']))
+      url = urlparse.urlunsplit((components.scheme, components.netloc, components.path, '', ''))
       if url in seen:
         continue
       else:

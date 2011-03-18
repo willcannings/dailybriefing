@@ -39,7 +39,7 @@ class SearchCategory(models.Model):
 
 class NewsSource(models.Model):
   name            = models.CharField(max_length = 255)
-  url_wildcard    = models.CharField(max_length = 255)
+  url_wildcard    = models.CharField(max_length = 1024)
   max_pages       = models.IntegerField(default = 10000, verbose_name="Max pages to process per hour")
   
   # formula variables
@@ -68,13 +68,22 @@ class NewsSource(models.Model):
   
   def indexed_all_time(self):
     return self.last_hour + self.last_24_hours + self.total_indexed
+  
+  def update_ready_count(self):
+    self.delayed_ready = self.page_set.filter(next_analysis__lte=datetime.datetime.now()).count()
+    self.save()
+  
+  def update_all_counts(self):
+    self.queue_immediate = self.page_set.filter(next_analysis=IMMEDIATE_QUEUE_ANALYSIS_DATE).count()
+    self.delayed_total = self.page_set.filter(next_analysis__isnull=False).count() - self.queue_immediate
+    self.update_ready_count()
 
 
 class Page(models.Model):
   index_page      = models.BooleanField(default=False)
-  url             = models.CharField(max_length = 255)
+  url             = models.CharField(max_length = 1024)
   news_source     = models.ForeignKey(NewsSource)
-  title           = models.CharField(max_length = 255, default='', blank=True)
+  title           = models.CharField(max_length = 1024, default='', blank=True)
   text            = models.TextField(blank=True)
   first_analysed  = models.DateTimeField(blank=True, null=True)
   last_analysed   = models.DateTimeField(blank=True, null=True)
@@ -93,7 +102,6 @@ class Page(models.Model):
       self.delete()
     else:
       self.next_analysis = datetime.datetime.now() + datetime.timedelta(minutes=5*(2 ** self.failure_count))
-      self.news_source.delayed_ready -= 1
       self.news_source.save()
       self.save()
   
@@ -115,7 +123,6 @@ class Page(models.Model):
       if self.analysis_count == 1:
         self.news_source.queue_immediate -= 1
         self.news_source.delayed_total += 1
-        self.news_source.delayed_ready += 1
         self.analysis_delta = INITIAL_ANALYSIS_DELTA
         self.text = text
       else:
@@ -137,7 +144,6 @@ class Page(models.Model):
     
     # update the news source analysis counts; a cron task moves the hourly count to daily, to total and so on
     self.news_source.last_hour += 1
-    self.news_source.delayed_ready -= 1
     self.news_source.save()
 
 

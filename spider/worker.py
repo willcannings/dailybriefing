@@ -1,6 +1,7 @@
 from threading import Thread
 from lxml import html
 import urllib2
+import chardet
 import re
 
 HEADING_TAGS  = ['h1', 'h2', 'h3', 'h4', 'h5', 'h6']
@@ -26,11 +27,15 @@ class Worker(Thread):
       
       # attempt to download the page
       try:
-        doc = html.parse(page.url)
-      except IOError:
+        data = urllib2.urlopen(page.url).read()
+      except urllib2.URLError:
         self.logger.debug("Error retrieving: " + page.url)
         page.error()
         continue
+      
+      # convert the page to utf8 and parse
+      charset = chardet.detect(data)
+      doc = html.fromstring(data.decode(charset['encoding']).encode('utf8'))
       
       # extract the page title
       page.title = doc.xpath("//title")[0].text_content()
