@@ -49,7 +49,14 @@ class Worker(Thread):
         for code_tag in doc.xpath("body//script | body//object | body//map | body//iframe | body//button | body//noscript"):
           code_tag.drop_tree()
       
-        # FIXME: the text of these elements needs to be wrapped in spaces since <p>one<b>two</b></p> will become <p>onetwo</p> otherwise
+        # the text of each elements needs to be wrapped in spaces since <p>one<b>two</b></p> will become <p>onetwo</p>
+        # once any inline elements (like b in this example) are removed
+        for element in doc.xpath("//*"):
+          if element.text:
+            element.text = ' ' + element.text
+          if element.tail:
+            element.tail = ' ' + element.tail
+        
         # remove inline text tags so <p>one <b>two</b> three</p> becomes <p>one two three</p>
         for inline_tag in doc.xpath("body//a | body//b | body//i | body//u | body//em | body//strong | body//font | body//abbr | body//acronym | body//small | body//span | body//sub | body//sup | body//tt | body//var | body//strike | body//aside | body//section | body//code | body//cite | body//defn | body//big"):
           inline_tag.drop_tag()

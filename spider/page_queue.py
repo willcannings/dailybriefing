@@ -16,6 +16,7 @@ class PageQueue:
     self.pages = {}
     self.queue = Queue.PriorityQueue()
     self.mutex = threading.Lock()
+    self.processed_pages = 0
   
   # the database stores the list of all pages and their next analysis
   # datetimes. we query the database for the list of all pages that
@@ -26,8 +27,9 @@ class PageQueue:
   def pull_from_database(self):
     self.logger.debug("Pulling queue from database")
     pages = Page.objects.filter(Q(next_analysis__lte=datetime.datetime.now) | Q(next_analysis=IMMEDIATE_QUEUE_ANALYSIS_DATE)).order_by('next_analysis').all()
-    self.logger.debug("Found " + str(len(pages)) + " pages")
+    self.logger.debug("Found " + str(len(pages)) + " ready or immediate pages")
     
+    # add any new, unknown pages, to the queue
     self.mutex.acquire()
     added = 0
     for page in pages:
@@ -35,8 +37,12 @@ class PageQueue:
         added += 1
         self.queue.put((page.next_analysis, page))
         self.pages[page.url] = page
+    
+    # for logging purposes print the number of successfully processed pages
+    self.logger.info("Added " + str(added) + " unknown ready or immediate pages from the database")
+    self.logger.info("Indexed " + str(self.processed_pages) + " pages")
+    self.processed_pages = 0
     self.mutex.release()
-    self.logger.info("Added " + str(added) + " new pages from the database")
     
     self.logger.debug("Updating news source ready counts")
     for source in NewsSource.objects.all():
@@ -68,7 +74,7 @@ class PageQueue:
         continue
       
       # create a link between the two pages if necessary
-      if not Link.objects.filter(page=page, outbound=linked_page).exists():
+      if (page.id != linked_page.id) and (not Link.objects.filter(page=page, outbound=linked_page).exists()):
         link = Link()
         link.page = page
         link.outbound = linked_page
@@ -123,4 +129,5 @@ class PageQueue:
   def remove_page(self, page):
     self.mutex.acquire()
     del self.pages[page.url]
+    self.processed_pages += 1
     self.mutex.release()
