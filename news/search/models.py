@@ -88,7 +88,7 @@ class Page(models.Model):
   text            = models.TextField(blank=True)
   first_analysed  = models.DateTimeField(blank=True, null=True)
   last_analysed   = models.DateTimeField(blank=True, null=True)
-  next_analysis   = models.DateTimeField()
+  next_analysis   = models.DateTimeField(blank=True, null=True)
   analysis_delta  = models.IntegerField(default = 60)
   analysis_count  = models.IntegerField(default = 0)
   times_changed   = models.IntegerField(default = 0)
@@ -98,11 +98,12 @@ class Page(models.Model):
   def error(self):
     self.failure_count += 1
     if self.failure_count == MAX_FAILURES:
-      self.news_source.delayed_total -= 1
-      self.news_source.save()
+      if self.first_analysed != None:
+        self.news_source.delayed_total -= 1
+        self.news_source.save()
       self.delete()
     else:
-      self.next_analysis = datetime.datetime.now() + datetime.timedelta(minutes=5*(2 ** self.failure_count))
+      self.next_analysis = datetime.datetime.now() + datetime.timedelta(minutes=5*(2 ** (page.failure_count - 1)))
       self.news_source.save()
       self.save()
   
@@ -128,11 +129,11 @@ class Page(models.Model):
         self.text = text
       else:
         if text != self.text:
-          self.analysis_delta = min(self.analysis_delta * TEXT_MODIFIED_SCALING, ONE_HOUR)
+          self.analysis_delta = max(self.analysis_delta * TEXT_MODIFIED_SCALING, ONE_HOUR)
           self.times_changed += 1
           self.text = text
         else:
-          self.analysis_delta = max(self.analysis_delta * TEXT_UNMODIFIED_SCALING, FIVE_DAYS)
+          self.analysis_delta = min(self.analysis_delta * TEXT_UNMODIFIED_SCALING, FIVE_DAYS)
     
     # pages become stale after 5 days
     five_days_ago = datetime.datetime.now() - datetime.timedelta(days=5)
