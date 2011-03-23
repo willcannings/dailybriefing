@@ -1,5 +1,4 @@
 from django.contrib.auth.models import User, Group
-from django.contrib.auth.admin import UserAdmin
 from django.contrib import admin
 from django.db import models
 import datetime
@@ -13,11 +12,6 @@ INITIAL_ANALYSIS_DELTA  = 60
 TEXT_MODIFIED_SCALING   = 0.7
 TEXT_UNMODIFIED_SCALING = 1.5
 IMMEDIATE_QUEUE_ANALYSIS_DATE = datetime.datetime(3000,1,1,0,0,0)
-
-
-# usernames are email addresses; the default max length of 30 is too short
-User._meta.get_field_by_name('username')[0].max_length = 100
-User._meta.get_field_by_name('email')[0].max_length = 100
 
 # ---------------------------------------------------------
 # models
@@ -157,6 +151,10 @@ class Link(models.Model):
 # ---------------------------------------------------------
 # admin
 # ---------------------------------------------------------
+# usernames are email addresses; the default max length of 30 is too short
+User._meta.get_field_by_name('username')[0].max_length = 100
+User._meta.get_field_by_name('email')[0].max_length = 100
+
 class SearchCategoryAdmin(admin.ModelAdmin):
   list_display = ('name',)
   ordering = ('index',)
@@ -187,4 +185,3 @@ class PageAdmin(admin.ModelAdmin):
 admin.site.register(SearchCategory, SearchCategoryAdmin)
 admin.site.register(NewsSource, NewsSourceAdmin)
 admin.site.register(Page, PageAdmin)
-admin.site.unregister(Group)
