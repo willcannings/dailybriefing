@@ -109,7 +109,8 @@ INSTALLED_APPS = (
   'django.contrib.admin',
   'django.contrib.admindocs',
   'south',
-  'search'
+  'search',
+  'haystack'
 )
 
 # A sample logging configuration. The only tangible logging
@@ -144,3 +145,8 @@ AUTHENTICATION_BACKENDS = (
 
 # logins are done from the home page
 LOGIN_URL = '/'
+
+# haystack (solr) options
+HAYSTACK_SITECONF = 'news.search_sites'
+HAYSTACK_SEARCH_ENGINE = 'solr'
+HAYSTACK_SOLR_URL = 'http://localhost:8983/solr'

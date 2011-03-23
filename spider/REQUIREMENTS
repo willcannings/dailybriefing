@@ -1,2 +1,3 @@
 lxml: http://lxml.de/index.html
 chardet: http://chardet.feedparser.org/
+argparse (Python 2.6 only)

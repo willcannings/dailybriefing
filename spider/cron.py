@@ -30,3 +30,5 @@ for news_source in NewsSource.objects.all():
     news_source.total_indexed += news_source.last_24_hours
     news_source.last_24_hours = 0
   news_source.update_all_counts()
+
+# TODO: run optimisation on lucene database
