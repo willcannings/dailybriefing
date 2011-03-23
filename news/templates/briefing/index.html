@@ -3,8 +3,8 @@
 {% block content %}
 <h1>Your Briefing</h1>
 
-{% for category_pair in categories %}
-  {% with category=category_pair|first items=category_pair|last %}
+{% for category_triple in categories %}
+  {% with category=category_triple|first results=category_triple|slice:"1:2"|first items=category_triple|last %}
   <section class='briefing'>
     <h1>
       <img src="{{ category.icon.url }}">{{ category.name }}
@@ -56,67 +56,22 @@
       </menu>
     </h1>
     <ol>
-      <li>
-        <h1><a href="http://www.informationweek.com/news/internet/google/showArticle.jhtml?articleID=229211204&cid=RSSfeed_IWK_All">Google Releases Translate App For iPhone</a></h1>
-        <aside>InformationWeek <span>39 minutes ago‎</span></aside>
-        <p>Google on Tuesday said that Google Translate is now available for iOS devices through Apple's iTunes App Store...</p>
-      </li>
-      
-      <li>
-        <h1><a href="http://www.telegraph.co.uk/technology/nokia/8316049/Nokia-moving-to-Microsoft-suggests-Google-exec.html">Nokia moving to Microsoft, suggests Google exec</a></h1>
-        <aside>Telegraph.co.uk <span>1 hour ago‎</span></aside>
-        <p>Nokia had been rumoured to be considering beginning to use either Google's own Android operating system or Microsoft's, but Gundotra's tweet ...</p>
-      </li>
-      
-      <li>
-        <h1><a href="http://www.telegraph.co.uk/technology/news/8316026/Why-do-Google-and-Facebook-both-want-to-buy-Twitter.html">Why do Google and Facebook both want to buy Twitter?</a></h1>
-        <aside>Telegraph.co.uk <span>41 minutes ago</span></aside>
-        <p>The re-emergence of rumours that both Google and Facebook are in fresh talks to buy Twitter, two years on from the first wave of acquisition ...</p>
-      </li>
-      
-      <div class="extra_stories" style="display: none">
-        <li>
-          <h1><a href="http://www.jpost.com/MiddleEast/Article.aspx?id=207638&R=R3">Google executive: Time for talks in Egypt has passed</a></h1>
-          <aside>Jerusalem Post <span>3 hours ago</span></aside>
-          <p>The time for negotiations in Egypt has passed, according to Wael Ghonim, a Google marketing manager who helped spark the country's unprecedented...</p>
-        </li>
-      
-        <li>
-          <h1><a href="http://socialbarrel.com/google-adds-priority-inbox-to-gmail/3631/">Google Adds Priority Inbox to Gmail</a></h1>
-          <aside>Social Barrel <span>50 minutes ago</span></aside>
-          <p>Google on Monday added Priority Inbox to its Gmail mobile Web app, a new feature that automatically filters all incoming Gmail messages...</p>
-        </li>
-      
-        <li>
-          <h1><a href="http://www.pcworld.com/article/218796/guess_what_google_calendar_chrome_extension_does.html">Guess What Google Calendar Chrome Extension Does?</a></h1>
-          <aside>PC World <span>33 minutes ago</span></aside>
-          <p>If you're a Google Calendar user who's also a fan of Chrome, you'll want this excellent, free extension from...</p>
-        </li>
-      
-        <li>
-          <h1><a href="http://www.infoworld.com/t/search/surprise-bing-tops-google-in-search-accuracy-035?source=footer">Surprise! Bing tops Google in search accuracy</a></h1>
-          <aside>InfoWorld <span>2 hours ago</span></aside>
-          <p>Here's a line of defense Microsoft could use against accusations that Bing steals Google's search results: Bing doesn't rip off...</p>
-        </li>
-      
-        <li>
-          <h1><a href="http://blogs.wsj.com/deals/2011/02/10/deals-of-the-day-is-twitter-worth-10-billion-google-facebook-think-so/">Deals of the Day: Is Twitter Worth $10 Billion? Google, Facebook Think So</a></h1>
-          <aside>Wall Street Journal <span>22 minutes ago</span></aside>
-          <p>Executives at both Facebook Inc. and Google, among other companies, have held low-level talks with those at Twitter in recent months to explore...</p>
-        </li>
-      
-        <li>
-          <h1><a href="http://www.boston.com/ae/theater_arts/articles/2011/02/10/google_art_project_is_underwhelming/">In the end, Google's closeups intrude on the art experience</a></h1>
-          <aside>Boston Globe <span>8 hours ago</span></aside>
-          <p>Google Art Project allows users to navigate through leading museums, zooming in on works such as Rembrandt's "Night Watch" at Amsterdam's...</p>
-        </li>
-      
-        <li>
-          <h1><a href="http://news.cnet.com/8301-30685_3-20031301-264.html">Google seeks to unlock Android 3.0 hardware power</a></h1>
-          <aside>CNET <span>38 minutes ago</span></aside>
-          <p>The new interface, is called Renderscript, said R. Jason Sams, an Android performance and graphics programmer at Google. He didn't say...</p>
-        </li>
-      </div>
+		{% for result in results|slice:"0:3" %}
+			<li>
+				<h1><a href="{{ result.object.url }}">{{ result.object.title }}</a></h1>
+				<aside>{{ result.object.news_source.name }} <span>{{ result.object.first_analysed|timesince }} ago</span></aside>
+				<p>{{ result.highlighted.text|first|safe }}</p>
+			</li>
+		{% endfor %}
+		<div class="extra_stories" style="display: none">
+			{% for result in results|slice:"3:10" %}
+				<li>
+					<h1><a href="{{ result.object.url }}">{{ result.object.title }}</a></h1>
+					<aside>{{ result.object.news_source.name }} <span>{{ result.object.first_analysed|timesince }} ago</span></aside>
+					<p>{{ result.highlighted.text|first|safe }}</p>
+				</li>
+			{% endfor %}
+		</div>
     </ol>
   </section>
   {% endwith %}

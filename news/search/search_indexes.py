@@ -5,6 +5,8 @@ from search.models import *
 class PageIndex(SearchIndex):
   text = CharField(document=True, use_template=True)
   first_analysed = DateTimeField(model_attr='first_analysed')
+  a1 = FloatField(model_attr='news_source__a1')
+  a2 = FloatField(model_attr='news_source__a2')
   
   def get_queryset(self):
     return Page.objects.filter(first_analysed__isnull=False)
