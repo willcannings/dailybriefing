@@ -1,4 +1,5 @@
 from django.contrib.auth.models import User, Group
+from haystack.query import SearchQuerySet
 from django.contrib import admin
 from django.db import models
 import datetime
@@ -25,6 +26,13 @@ class SearchItem(models.Model):
   created_at      = models.DateTimeField(auto_now_add = True)
 
 
+# raw queries are used so we can boost result scores with a function
+AGE_HOURS = "div(ms(NOW,first_analysed),3600000)"
+AGE_BOOST = "product(product(%s,-1),a1)" % AGE_HOURS
+FRESHNESS_BOOST = "product(log(sum(div(10,sum(%s,0.001)),1)),a2)" % AGE_HOURS
+BOOST_FUNCTION = "sum(%s,%s)" %(AGE_BOOST, FRESHNESS_BOOST)
+QUERY_OPTIONS = "{!dismax qf=text pf=text fl=django_ct,django_id,score rows=10 wt=json mm=1 bf=%s}" % BOOST_FUNCTION
+
 class SearchCategory(models.Model):
   name = models.CharField(max_length = 255)
   icon = models.ImageField(upload_to='icons')
@@ -32,7 +40,12 @@ class SearchCategory(models.Model):
   
   def items_for_user(self, user):
     return SearchItem.objects.filter(user=user, category=self).order_by('created_at').all()
-
+  
+  def results_for_user(self, user):
+    query_string = ' '.join([query.name for query in self.items_for_user(user)])
+    query = SearchQuerySet().highlight().raw_search("%s%s" % (QUERY_OPTIONS, query_string))
+    return query.load_all()
+    
 
 class NewsSource(models.Model):
   name            = models.CharField(max_length = 255)

@@ -5,7 +5,7 @@ from search.models import *
 
 @login_required
 def index(request):
-  categories = [[x, x.items_for_user(request.user)] for x in SearchCategory.objects.order_by('index').all()]
+  categories = [[x, x.results_for_user(request.user), x.items_for_user(request.user)] for x in SearchCategory.objects.order_by('index').all()]
   context = RequestContext(request)
   return render_to_response('briefing/index.html', {'title': 'Your Briefing', 'categories': categories}, context_instance=context)
 

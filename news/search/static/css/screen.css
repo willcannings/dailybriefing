@@ -438,6 +438,10 @@ ul.admin {
     .briefing ol p {
       font-size: 12px;
     }
+    
+      .briefing ol p em {
+        font-weight: bold;
+      }
 
 .query_list {
   position: absolute;
