@@ -2,8 +2,10 @@ from django.contrib.auth.models import User, Group
 from django.contrib import admin
 from django.db import models
 import datetime
+import math
 
 # spider constants
+HOUR                    = 60.0
 ONE_HOUR                = 60
 FIVE_DAYS               = 7200
 MAX_FAILURES            = 8
@@ -88,6 +90,11 @@ class Page(models.Model):
   times_changed   = models.IntegerField(default = 0)
   time_on_index   = models.IntegerField(default = 0)
   failure_count   = models.IntegerField(default = 0)
+  
+  def static_boost(self):
+    inbound_boost = math.log(((self.inbound_set.count() - 1) * float(self.news_source.l1)) + 1) * float(self.news_source.l2)
+    index_boost = math.log(((self.time_on_index / HOUR) * float(self.news_source.t1)) + 1) * float(self.news_source.t2)
+    return inbound_boost + index_boost
   
   def error(self):
     self.failure_count += 1
