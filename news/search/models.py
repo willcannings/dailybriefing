@@ -1,5 +1,4 @@
 from django.contrib.auth.models import User, Group
-from haystack.query import SearchQuerySet
 from django.contrib import admin
 from django.db import models
 import datetime
@@ -205,3 +204,5 @@ class PageAdmin(admin.ModelAdmin):
 admin.site.register(SearchCategory, SearchCategoryAdmin)
 admin.site.register(NewsSource, NewsSourceAdmin)
 admin.site.register(Page, PageAdmin)
+
+from haystack.query import SearchQuerySet
