@@ -26,7 +26,8 @@ class PageQueue:
   # the page until that time.
   def pull_from_database(self):
     self.logger.debug("Pulling queue from database")
-    pages = Page.objects.filter(Q(next_analysis__lte=datetime.datetime.now) | Q(next_analysis=IMMEDIATE_QUEUE_ANALYSIS_DATE)).order_by('next_analysis').all()
+    #pages = Page.objects.filter(Q(next_analysis__lte=datetime.datetime.now) | Q(next_analysis=IMMEDIATE_QUEUE_ANALYSIS_DATE)).order_by('next_analysis').all()
+    pages = Page.objects.filter(next_analysis=IMMEDIATE_QUEUE_ANALYSIS_DATE).order_by('next_analysis').all()
     self.logger.debug("Found " + str(len(pages)) + " ready or immediate pages")
     
     # add any new, unknown pages, to the queue
@@ -41,6 +42,7 @@ class PageQueue:
     # for logging purposes print the number of successfully processed pages
     self.logger.debug("Added " + str(added) + " unknown ready or immediate pages from the database")
     self.logger.info("Indexed " + str(self.processed_pages) + " pages")
+    self.logger.info("Queue size: " + str(self.queue.qsize()) + " pages")
     self.processed_pages = 0
     self.mutex.release()
     
@@ -55,6 +57,11 @@ class PageQueue:
     for link in links:
       components = urlparse.urlsplit(urlparse.urljoin(page.url, link.attrib['href']))
       url = urlparse.urlunsplit((components.scheme, components.netloc, components.path, '', ''))
+
+      # ignore CNN transcript pages
+      if url.find("TRANSCRIPTS") != -1:
+        continue
+
       if url in seen:
         continue
       else:
