@@ -103,6 +103,9 @@ class Page(models.Model):
   time_on_index   = models.IntegerField(default = 0)
   failure_count   = models.IntegerField(default = 0)
   
+  def __str__(self):
+    return self.url
+  
   def static_boost(self):
     inbound_boost = math.log(((self.inbound_set.count() - 1) * float(self.news_source.l1)) + 1) * float(self.news_source.l2)
     index_boost = math.log(((self.time_on_index / HOUR) * float(self.news_source.t1)) + 1) * float(self.news_source.t2)
@@ -178,6 +181,14 @@ class SearchCategoryAdmin(admin.ModelAdmin):
   list_display = ('name',)
   ordering = ('index',)
 
+class PageInline(admin.StackedInline):
+  list_display = ('url',)
+  model = Page
+  extra = 10
+  max_num = None
+  fieldsets = ((None, {'fields': ('url',)}),)
+  def queryset(self, request):
+    return super(PageInline, self).queryset(request).filter(index_page=True)
 
 class NewsSourceAdmin(admin.ModelAdmin):
   list_display = ('name',)
@@ -197,6 +208,7 @@ class NewsSourceAdmin(admin.ModelAdmin):
       'fields': ('url_wildcard', 'max_pages', 'l1', 'l2', 't1', 't2', 'a1', 'a2')
     })
   )
+  inlines = [PageInline]
 
 class PageAdmin(admin.ModelAdmin):
   pass

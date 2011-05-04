@@ -123,6 +123,20 @@ class SourceForm(forms.ModelForm):
     model = NewsSource
     fields = ('name', 'url_wildcard', 'max_pages', 'l1', 'l2', 't1', 't2', 'a1', 'a2')
 
+class IndexPageForm(forms.ModelForm):
+  fields=('url', 'index_page', 'news_source')
+  index_page = forms.BooleanField(widget=forms.HiddenInput())
+  class Meta: 
+    model = Page
+# 
+# def my_formfield_cb(field): 
+#     if isinstance(field, models.FileField) and field.name == 'file': 
+#         return fields.FileField(widget = AdminFileWidget(attrs={'url': 
+# "/my/url/"})) 
+#     return field.formfield() 
+# FileFormSet = inlineformset_factory(Version, File, extra=1, 
+# formfield_callback = my_formfield_cb) 
+# formSet = FileFormSet()
 
 @user_passes_test(lambda u: u.is_superuser)
 def sources(request):
@@ -152,13 +166,14 @@ def sources(request):
 @user_passes_test(lambda u: u.is_superuser)
 def source(request, id):
   # pages inline formset
-  PageFormSet = forms.models.inlineformset_factory(NewsSource, Page, extra=0, fields=('url',))
+  PageFormSet = forms.models.inlineformset_factory(NewsSource, Page, extra=0, form=IndexPageForm, fields=('url', 'index_page', 'news_source'))
   source = get_object_or_404(NewsSource, id=id)
   message = ''
 
   if request.method == 'POST':
     form = SourceForm(request.POST, instance=source)
     formset = PageFormSet(request.POST, request.FILES, instance=source)
+    print formset
     if form.is_valid() and formset.is_valid():
       form.save()
       formset.save()
@@ -177,7 +192,7 @@ def source(request, id):
     'form': form,
     'formset': formset,
     'message': message,
-    'index_count': source.page_set.count(),
+    'index_count': source.page_set.filter(index_page=True).count(),
     'sublinks': admin_sublinks()
   }, context_instance=context)
 
@@ -203,9 +218,6 @@ def new_source(request):
     'message': message,
     'sublinks': admin_sublinks()
   }, context_instance=context)
-
-
-
 
 @user_passes_test(lambda u: u.is_superuser)
 def new_source_index(request, id):

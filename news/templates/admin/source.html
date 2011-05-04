@@ -81,6 +81,8 @@
           {{ form.url.errors }}
           <p>
             <label>Url:</label>
+            {{ form.index_page }}
+            {{ form.news_source }}
             {{ form.url }}
             {{ form.DELETE }} Delete
             {% for key, value in form.fields.items %}
@@ -115,4 +117,8 @@
   <input type="submit" value="Save">
 </form>
 
+<script>
+  var indexPages = {{index_count}};
+  newsSourceID = {{source.id}};
+</script>
 {% endblock %}
